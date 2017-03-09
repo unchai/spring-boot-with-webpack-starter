@@ -5,17 +5,19 @@
 * Apache maven 3.1+
 
 ### Usage
-#### For developer's local mode (Not aggregated static resources)
+#### For developer's local mode (Not aggregated and uglified static resources)
 ```
 $ mvn clean spring-boot:run
 ```
 
-#### For develop mode (Aggregated static resources with sourcemaps)
+#### For develop mode (Aggregated and uglified static resources with sourcemaps)
 ```
-$ mvn -Pdev clean package tomcat7:run-war-only
+$ mvn -Pdev clean package
+$ java -jar ./target/spring-boot-with-frontend-stater-0.0.1-SNAPSHOT.war
 ```
 
-#### For product mode (Aggregated static resources only)
+#### For product mode (Aggregated and uglified static resources without sourcemaps)
 ```
-$ mvn -Preal clean package tomcat7:run-war-only
+$ mvn -Preal clean package
+$ java -jar ./target/spring-boot-with-frontend-stater-0.0.1-SNAPSHOT.war
 ```

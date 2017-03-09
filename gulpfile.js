@@ -6,65 +6,89 @@ var revReplace = require('gulp-rev-replace');
 var filter = require('gulp-filter');
 var cleanCss = require('gulp-clean-css');
 var sourcemaps = require('gulp-sourcemaps');
-var jshint = require('gulp-jshint');
 var gulpif = require('gulp-if');
-var lazypipe = require('lazypipe');
+var revdel = require('gulp-rev-delete-original');
+var debug = require('gulp-debug');
+var babel = require('gulp-babel');
+var yargs = require('yargs');
+var del = require('del');
 
-var argv = require('yargs').argv;
-
-// User-made Javascript file filter. (exclude aggregated & vendor-provided file)
-var userMadeJsFileFilter = filter(['**/*.js', '!target/deploy/static/aggregate/**/*.js', '!target/deploy/static/vendor/**/*.js'], {restore: true});
-var baseDir = './target/deploy/';
-var withSourcemaps = argv['with-sourcemaps'];
+var basedir = './target/prepare/';
+var withSourcemaps = yargs.argv['with-sourcemaps'];
 
 if (withSourcemaps) {
 	console.log('Making sourcemaps files...');
 }
 
-gulp.task('jshint', function () {
-	return gulp.src(baseDir + '**/*.js')
-		.pipe(userMadeJsFileFilter)
-		.pipe(jshint())
-		.pipe(userMadeJsFileFilter.restore)
-		.pipe(jshint.reporter('default'));
+gulp.task('prepare', function () {
+	var srcdir = './src/main/webapp/';
+	return gulp.src([srcdir + '**/*.js', srcdir + '**/*.css', srcdir + '**/*.jsp'])
+		.pipe(gulp.dest(basedir));
 });
 
 /**
- * JS&CSS Aggregate + Uglify + Revisionize + Replace JSP src attribute
+ * JS Babel
+ *  - https://github.com/babel/gulp-babel
  */
-gulp.task('useref', function () {
-	return gulp.src(baseDir + '**/*.jsp')
-		.pipe(useref({searchPath: './src/main/webapp'}, lazypipe().pipe(sourcemaps.init, {loadMaps: true})))
-		.pipe(gulpif('*.js', (lazypipe().pipe(uglify).pipe(rev))()))
-		.pipe(gulpif('*.css', (lazypipe().pipe(cleanCss, {processImport: false}).pipe(rev))()))
-		.pipe(revReplace({replaceInExtensions: ['.jsp']}))
-		.pipe(gulpif(withSourcemaps, sourcemaps.write('.')))
-		.pipe(gulp.dest(baseDir));
+gulp.task('babel', ['prepare'], function () {
+	return gulp.src([basedir + '**/*.js', '!' + basedir + 'static/bower_components/**/**'])
+		.pipe(babel({presets: ['es2015']}))
+		.pipe(gulp.dest(basedir));
 });
 
 /**
- * Uglify + Revisionize
+ * JS & CSS Aggregate
+ *  - https://github.com/jonkemp/gulp-useref
  */
-gulp.task('uglify-rev:js', function () {
-	return gulp.src(baseDir + '**/*.js')
-		.pipe(userMadeJsFileFilter)
+gulp.task('useref', ['babel'], function () {
+	return gulp.src(basedir + '**/*.jsp')
+		.pipe(useref({searchPath: basedir}))
+		.pipe(gulp.dest(basedir));
+});
+
+/**
+ * Uglify JS + Clean CSS + Revisionize
+ *  - https://github.com/terinjokes/gulp-uglify
+ *  - https://github.com/scniro/gulp-clean-css
+ *  - https://github.com/sindresorhus/gulp-rev
+ *  - https://github.com/nib-health-funds/gulp-rev-delete-original
+ */
+gulp.task('uglify', ['useref'], function () {
+	var JS_FILTER = filter(['**/*.js'], {restore: true});
+	var CSS_FILTER = filter(['**/*.css'], {restore: true});
+
+	return gulp.src([basedir + '**/*.js', basedir + '**/*.css', '!' + basedir + 'static/bower_components/**/**'])
 		.pipe(sourcemaps.init({loadMaps: true}))
-		.pipe(uglify())
-		.pipe(rev())
+		.pipe(JS_FILTER)
+		.pipe(uglify()) // JS Uglify & minify
+		.pipe(JS_FILTER.restore)
+		.pipe(CSS_FILTER)
+		.pipe(cleanCss({processImport: false})) // CSS Cleaning & minify
+		.pipe(CSS_FILTER.restore)
+		.pipe(rev()) // Revisioning
+		.pipe(revdel()) // Delete original file
 		.pipe(gulpif(withSourcemaps, sourcemaps.write('.')))
-		.pipe(userMadeJsFileFilter.restore)
-		.pipe(gulp.dest(baseDir))
-		.pipe(rev.manifest())
-		.pipe(gulp.dest(baseDir));
+		.pipe(debug({title: 'minify:'}))
+		.pipe(gulp.dest(basedir))
+		.pipe(rev.manifest()) // Make revisioned file map
+		.pipe(gulp.dest(basedir));
 });
 
-gulp.task('revrepl:js', ['uglify-rev:js', 'useref'], function () {
-	return gulp.src(baseDir + '**/*.jsp')
+/**
+ * Replace Revisioned JS & CSS filename to JSP src attribute
+ *  - https://github.com/jamesknelson/gulp-rev-replace
+ */
+gulp.task('replace-rev', ['uglify'], function () {
+	return gulp.src(basedir + '**/*.jsp')
 		.pipe(revReplace({
-			manifest: gulp.src(baseDir + 'rev-manifest.json'),
+			manifest: gulp.src(basedir + 'rev-manifest.json'),
 			replaceInExtensions: ['.jsp']
 		}))
-		.pipe(gulp.dest(baseDir));
+		.pipe(gulp.dest(basedir));
 });
 
-gulp.task('default', ['jshint', 'useref', 'revrepl:js']);
+gulp.task('clean', ['replace-rev'], function () {
+	del([basedir + 'static/bower_components']);
+});
+
+gulp.task('default', ['clean']);
