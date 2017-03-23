@@ -3,21 +3,18 @@
 ### Requirements
 * Java 1.7+
 * Apache maven 3.1+
+* Node.js
 
 ### Usage
-#### For developer's local mode (Not aggregated and uglified static resources)
+#### For developer's local mode
 ```
-$ mvn clean spring-boot:run
-```
-
-#### For develop mode (Aggregated and uglified static resources with sourcemaps)
-```
-$ mvn -Pdev clean package
-$ java -jar ./target/spring-boot-with-frontend-stater-0.0.1-SNAPSHOT.war
+$ (Run Tomcat via IntelliJ IDEA)
+$ npm install
+$ npm run watch
 ```
 
-#### For product mode (Aggregated and uglified static resources without sourcemaps)
+#### For production mode
 ```
-$ mvn -Preal clean package
+$ mvn clean package
 $ java -jar ./target/spring-boot-with-frontend-stater-0.0.1-SNAPSHOT.war
 ```

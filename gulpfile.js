@@ -1,37 +1,39 @@
 var gulp = require('gulp');
-var useref = require('gulp-useref');
-var uglify = require('gulp-uglify');
-var rev = require('gulp-rev');
-var revReplace = require('gulp-rev-replace');
-var filter = require('gulp-filter');
-var cleanCss = require('gulp-clean-css');
-var sourcemaps = require('gulp-sourcemaps');
-var gulpif = require('gulp-if');
-var revdel = require('gulp-rev-delete-original');
-var debug = require('gulp-debug');
 var babel = require('gulp-babel');
-var yargs = require('yargs');
-var del = require('del');
+var cleanCss = require('gulp-clean-css');
+var debug = require('gulp-debug');
+var filter = require('gulp-filter');
+var rev = require('gulp-rev');
+var revdel = require('gulp-rev-delete-original');
+var revReplace = require('gulp-rev-replace');
+var uglify = require('gulp-uglify');
+var useref = require('gulp-useref');
+var gutil = require('gulp-util');
+var webpack = require('webpack');
+var webpackConfig = require('./webpack.config');
 
 var basedir = './target/prepare/';
-var withSourcemaps = yargs.argv['with-sourcemaps'];
-
-if (withSourcemaps) {
-	console.log('Making sourcemaps files...');
-}
 
 gulp.task('prepare', function () {
 	var srcdir = './src/main/webapp/';
-	return gulp.src([srcdir + '**/*.js', srcdir + '**/*.css', srcdir + '**/*.jsp'])
+	return gulp.src([srcdir + '**/*.js', srcdir + '**/*.css', srcdir + '**/*.jsp', '!' + srcdir + 'static/entries/**/**'])
 		.pipe(gulp.dest(basedir));
+});
+
+gulp.task('webpack', ['prepare'], function (callback) {
+	webpack(webpackConfig, function (err, stats) {
+		if (err) throw new gutil.PluginError('webpack', err);
+		gutil.log("[webpack]", stats.toString());
+		callback();
+	});
 });
 
 /**
  * JS Babel
  *  - https://github.com/babel/gulp-babel
  */
-gulp.task('babel', ['prepare'], function () {
-	return gulp.src([basedir + '**/*.js', '!' + basedir + 'static/bower_components/**/**'])
+gulp.task('babel', ['webpack'], function () {
+	return gulp.src([basedir + '**/*.js', '!' + basedir + 'static/vendor/**/**', '!' + basedir + 'static/bundle/**/**'])
 		.pipe(babel({presets: ['es2015']}))
 		.pipe(gulp.dest(basedir));
 });
@@ -57,8 +59,7 @@ gulp.task('uglify', ['useref'], function () {
 	var JS_FILTER = filter(['**/*.js'], {restore: true});
 	var CSS_FILTER = filter(['**/*.css'], {restore: true});
 
-	return gulp.src([basedir + '**/*.js', basedir + '**/*.css', '!' + basedir + 'static/bower_components/**/**'])
-		.pipe(sourcemaps.init({loadMaps: true}))
+	return gulp.src([basedir + '**/*.js', basedir + '**/*.css', '!' + basedir + 'static/vendor/**/**'])
 		.pipe(JS_FILTER)
 		.pipe(uglify()) // JS Uglify & minify
 		.pipe(JS_FILTER.restore)
@@ -67,8 +68,7 @@ gulp.task('uglify', ['useref'], function () {
 		.pipe(CSS_FILTER.restore)
 		.pipe(rev()) // Revisioning
 		.pipe(revdel()) // Delete original file
-		.pipe(gulpif(withSourcemaps, sourcemaps.write('.')))
-		.pipe(debug({title: 'minify:'}))
+		.pipe(debug({title: 'uglify:'}))
 		.pipe(gulp.dest(basedir))
 		.pipe(rev.manifest()) // Make revisioned file map
 		.pipe(gulp.dest(basedir));
@@ -87,8 +87,4 @@ gulp.task('replace-rev', ['uglify'], function () {
 		.pipe(gulp.dest(basedir));
 });
 
-gulp.task('clean', ['replace-rev'], function () {
-	del([basedir + 'static/bower_components']);
-});
-
-gulp.task('default', ['clean']);
+gulp.task('default', ['replace-rev']);
