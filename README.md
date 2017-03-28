@@ -8,13 +8,13 @@
 ### Usage
 #### For developer's local mode
 ```
-$ (Run Tomcat via IntelliJ IDEA)
 $ npm install
+$ ./mvnw clean spring-boot:run &
 $ npm run watch
 ```
 
 #### For production mode
 ```
-$ mvn clean package
+$ ./mvnw clean package
 $ java -jar ./target/spring-boot-with-frontend-stater-0.0.1-SNAPSHOT.war
 ```

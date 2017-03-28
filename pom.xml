@@ -70,12 +70,14 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -92,14 +94,14 @@
 				<executions>
 					<execution>
 						<id>install node and npm</id>
-						<phase>generate-sources</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>install-node-and-npm</goal>
 						</goals>
 					</execution>
 					<execution>
 						<id>npm</id>
-						<phase>generate-sources</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>npm</goal>
 						</goals>
@@ -124,7 +126,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<webappDirectory>${project.build.directory}/deploy</webappDirectory>
-					<warSourceExcludes>static/bower_components/**,**/*.js,**/*.css,**/*.jsp</warSourceExcludes>
+					<warSourceExcludes>**/*.js,**/*.css,**/*.jsp</warSourceExcludes>
 					<webResources>
 						<resource>
 							<directory>${project.build.directory}/prepare</directory>
