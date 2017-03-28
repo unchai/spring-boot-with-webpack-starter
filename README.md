@@ -9,7 +9,7 @@
 #### For developer's local mode
 ```
 $ npm install
-$ ./mvnw clean spring-boot:run &
+$ ./mvnw clean spring-boot:run -Drun.jvmArguments="-Dspring.profiles.active=local" &
 $ npm run watch
 ```
 

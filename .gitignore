@@ -1,7 +1,8 @@
+.yarnclean
+
 etc/
 node/
 node_modules/
-src/main/webapp/static/bower_components/
 target/
 
 .idea/

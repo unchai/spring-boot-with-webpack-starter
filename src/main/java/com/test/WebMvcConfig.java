@@ -1,8 +1,9 @@
-package com.test.controller;
+package com.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Configuration
+@Profile("local")
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	private Logger logger = LoggerFactory.getLogger(WebMvcConfig.class);
 

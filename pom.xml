@@ -47,8 +47,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<!-- maven-frontend-plugin configuration -->
-		<nodeVersion>v6.10.0</nodeVersion>
-		<npmVersion>4.4.4</npmVersion>
+		<nodeVersion>v6.10.1</nodeVersion>
+		<yarnVersion>v0.21.3</yarnVersion>
 		<!-- //maven-frontend-plugin configuration -->
 	</properties>
 
@@ -90,30 +90,30 @@
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
-				<version>1.0</version>
+				<version>1.4</version>
 				<executions>
 					<execution>
-						<id>install node and npm</id>
+						<id>install node and yarn</id>
 						<phase>prepare-package</phase>
 						<goals>
-							<goal>install-node-and-npm</goal>
+							<goal>install-node-and-yarn</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>npm</id>
+						<id>yarn install</id>
 						<phase>prepare-package</phase>
 						<goals>
-							<goal>npm</goal>
+							<goal>yarn</goal>
 						</goals>
 						<configuration>
 							<arguments>install</arguments>
 						</configuration>
 					</execution>
 					<execution>
-						<id>npm build</id>
+						<id>yarn run build</id>
 						<phase>prepare-package</phase>
 						<goals>
-							<goal>npm</goal>
+							<goal>yarn</goal>
 						</goals>
 						<configuration>
 							<arguments>run build</arguments>
