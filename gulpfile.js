@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-var babel = require('gulp-babel');
 var cleanCss = require('gulp-clean-css');
 var debug = require('gulp-debug');
 var filter = require('gulp-filter');
@@ -7,7 +6,6 @@ var rev = require('gulp-rev');
 var revdel = require('gulp-rev-delete-original');
 var revReplace = require('gulp-rev-replace');
 var uglify = require('gulp-uglify');
-var useref = require('gulp-useref');
 var gutil = require('gulp-util');
 var webpack = require('webpack');
 var webpackConfig = require('./webpack.config');
@@ -29,46 +27,28 @@ gulp.task('webpack', ['prepare'], function (callback) {
 });
 
 /**
- * JS Babel
- *  - https://github.com/babel/gulp-babel
- */
-gulp.task('babel', ['webpack'], function () {
-	return gulp.src([basedir + '**/*.js', '!' + basedir + 'static/vendor/**/**', '!' + basedir + 'static/bundle/**/**'])
-		.pipe(babel({presets: ['es2015']}))
-		.pipe(gulp.dest(basedir));
-});
-
-/**
- * JS & CSS Aggregate
- *  - https://github.com/jonkemp/gulp-useref
- */
-gulp.task('useref', ['babel'], function () {
-	return gulp.src(basedir + '**/*.jsp')
-		.pipe(useref({searchPath: basedir}))
-		.pipe(gulp.dest(basedir));
-});
-
-/**
  * Uglify JS + Clean CSS + Revisionize
  *  - https://github.com/terinjokes/gulp-uglify
  *  - https://github.com/scniro/gulp-clean-css
  *  - https://github.com/sindresorhus/gulp-rev
  *  - https://github.com/nib-health-funds/gulp-rev-delete-original
  */
-gulp.task('uglify', ['useref'], function () {
-	var JS_FILTER = filter(['**/*.js'], {restore: true});
+gulp.task('uglify', ['webpack'], function () {
+	var JS_FILTER = filter(['**/*.js', '!target/prepare/static/bundle/**/**'], {restore: true});
 	var CSS_FILTER = filter(['**/*.css'], {restore: true});
 
 	return gulp.src([basedir + '**/*.js', basedir + '**/*.css', '!' + basedir + 'static/vendor/**/**'])
 		.pipe(JS_FILTER)
 		.pipe(uglify()) // JS Uglify & minify
+		.pipe(debug({title: 'uglify:'}))
 		.pipe(JS_FILTER.restore)
 		.pipe(CSS_FILTER)
 		.pipe(cleanCss({processImport: false})) // CSS Cleaning & minify
+		.pipe(debug({title: 'cleanCss:'}))
 		.pipe(CSS_FILTER.restore)
 		.pipe(rev()) // Revisioning
 		.pipe(revdel()) // Delete original file
-		.pipe(debug({title: 'uglify:'}))
+		.pipe(debug({title: 'revisioning:'}))
 		.pipe(gulp.dest(basedir))
 		.pipe(rev.manifest()) // Make revisioned file map
 		.pipe(gulp.dest(basedir));
@@ -79,10 +59,10 @@ gulp.task('uglify', ['useref'], function () {
  *  - https://github.com/jamesknelson/gulp-rev-replace
  */
 gulp.task('replace-rev', ['uglify'], function () {
-	return gulp.src(basedir + '**/*.jsp')
+	return gulp.src([basedir + '**/*.jsp', basedir + '**/*.html', basedir + '**/*.htm'])
 		.pipe(revReplace({
 			manifest: gulp.src(basedir + 'rev-manifest.json'),
-			replaceInExtensions: ['.jsp']
+			replaceInExtensions: ['.jsp', '.html', '.htm']
 		}))
 		.pipe(gulp.dest(basedir));
 });
