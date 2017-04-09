@@ -13,17 +13,17 @@ var webpackConfig = require('./webpack.config');
 var basedir = './target/prepare/';
 
 gulp.task('prepare', function () {
-	var srcdir = './src/main/webapp/';
-	return gulp.src([srcdir + '**/*.js', srcdir + '**/*.css', srcdir + '**/*.jsp', '!' + srcdir + 'static/entries/**/**'])
-		.pipe(gulp.dest(basedir));
+  var srcdir = './src/main/webapp/';
+  return gulp.src([srcdir + '**/*.js', srcdir + '**/*.css', srcdir + '**/*.jsp', '!' + srcdir + 'static/entries/**/**'])
+    .pipe(gulp.dest(basedir));
 });
 
 gulp.task('webpack', ['prepare'], function (callback) {
-	webpack(webpackConfig, function (err, stats) {
-		if (err) throw new gutil.PluginError('webpack', err);
-		gutil.log('[webpack]', stats.toString());
-		callback();
-	});
+  webpack(webpackConfig, function (err, stats) {
+    if (err) throw new gutil.PluginError('webpack', err);
+    gutil.log('[webpack]', stats.toString());
+    callback();
+  });
 });
 
 /**
@@ -34,24 +34,24 @@ gulp.task('webpack', ['prepare'], function (callback) {
  *  - https://github.com/nib-health-funds/gulp-rev-delete-original
  */
 gulp.task('uglify', ['webpack'], function () {
-	var JS_FILTER = filter(['**/*.js', '!target/prepare/static/bundle/**/**'], {restore: true});
-	var CSS_FILTER = filter(['**/*.css'], {restore: true});
+  var JS_FILTER = filter(['**/*.js', '!target/prepare/static/bundle/**/**'], {restore: true});
+  var CSS_FILTER = filter(['**/*.css'], {restore: true});
 
-	return gulp.src([basedir + '**/*.js', basedir + '**/*.css', '!' + basedir + 'static/vendor/**/**'])
-		.pipe(JS_FILTER)
-		.pipe(uglify()) // JS Uglify & minify
-		.pipe(debug({title: 'uglify:'}))
-		.pipe(JS_FILTER.restore)
-		.pipe(CSS_FILTER)
-		.pipe(cleanCss({processImport: false})) // CSS Cleaning & minify
-		.pipe(debug({title: 'cleanCss:'}))
-		.pipe(CSS_FILTER.restore)
-		.pipe(rev()) // Revisioning
-		.pipe(revdel()) // Delete original file
-		.pipe(debug({title: 'revisioning:'}))
-		.pipe(gulp.dest(basedir))
-		.pipe(rev.manifest()) // Make revisioned file map
-		.pipe(gulp.dest(basedir));
+  return gulp.src([basedir + '**/*.js', basedir + '**/*.css', '!' + basedir + 'static/vendor/**/**'])
+    .pipe(JS_FILTER)
+    .pipe(uglify()) // JS Uglify & minify
+    .pipe(debug({title: 'uglify:'}))
+    .pipe(JS_FILTER.restore)
+    .pipe(CSS_FILTER)
+    .pipe(cleanCss({processImport: false})) // CSS Cleaning & minify
+    .pipe(debug({title: 'cleanCss:'}))
+    .pipe(CSS_FILTER.restore)
+    .pipe(rev()) // Revisioning
+    .pipe(revdel()) // Delete original file
+    .pipe(debug({title: 'revisioning:'}))
+    .pipe(gulp.dest(basedir))
+    .pipe(rev.manifest()) // Make revisioned file map
+    .pipe(gulp.dest(basedir));
 });
 
 /**
@@ -59,12 +59,12 @@ gulp.task('uglify', ['webpack'], function () {
  *  - https://github.com/jamesknelson/gulp-rev-replace
  */
 gulp.task('replace-rev', ['uglify'], function () {
-	return gulp.src([basedir + '**/*.jsp', basedir + '**/*.html', basedir + '**/*.htm'])
-		.pipe(revReplace({
-			manifest: gulp.src(basedir + 'rev-manifest.json'),
-			replaceInExtensions: ['.jsp', '.html', '.htm']
-		}))
-		.pipe(gulp.dest(basedir));
+  return gulp.src([basedir + '**/*.jsp', basedir + '**/*.html', basedir + '**/*.htm'])
+    .pipe(revReplace({
+      manifest: gulp.src(basedir + 'rev-manifest.json'),
+      replaceInExtensions: ['.jsp', '.html', '.htm']
+    }))
+    .pipe(gulp.dest(basedir));
 });
 
 gulp.task('default', ['replace-rev']);
