@@ -126,7 +126,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<webappDirectory>${project.build.directory}/deploy</webappDirectory>
-					<warSourceExcludes>**/*.js,**/*.css,**/*.jsp,**/*.html,**/*.htm</warSourceExcludes>
+					<warSourceExcludes>**/*.js,**/*.jsp,**/*.html,**/*.htm</warSourceExcludes>
 					<webResources>
 						<resource>
 							<directory>${project.build.directory}/prepare</directory>
