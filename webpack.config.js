@@ -2,9 +2,11 @@ const path = require('path');
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const commonConfig = require('./webpack.config.common');
+const ManifestPlugin = require('webpack-manifest-plugin');
 
 module.exports = webpackMerge(commonConfig, {
   output: {
+    filename: '[name]-[hash].js',
     path: path.resolve(__dirname, 'target/prepare/static/bundle'),
   },
   plugins: [
@@ -23,6 +25,10 @@ module.exports = webpackMerge(commonConfig, {
         screw_ie8: true
       },
       comments: false
+    }),
+    new ManifestPlugin({
+      fileName: 'rev-manifest.json',
+      basePath: '/static/bundle/'
     })
   ]
 });

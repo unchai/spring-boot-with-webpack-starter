@@ -35,5 +35,3 @@ module.exports = {
     new webpack.NoEmitOnErrorsPlugin()
   ]
 };
-
-process.noDeprecation = true;

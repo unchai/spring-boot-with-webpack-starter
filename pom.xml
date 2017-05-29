@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.2.RELEASE</version>
+		<version>1.5.3.RELEASE</version>
 		<relativePath/>
 	</parent>
 
@@ -47,8 +47,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<!-- maven-frontend-plugin configuration -->
-		<nodeVersion>v6.10.2</nodeVersion>
-		<yarnVersion>v0.22.0</yarnVersion>
+		<nodeVersion>v6.10.3</nodeVersion>
+		<yarnVersion>v0.24.5</yarnVersion>
 		<!-- //maven-frontend-plugin configuration -->
 	</properties>
 
@@ -126,7 +126,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<webappDirectory>${project.build.directory}/deploy</webappDirectory>
-					<warSourceExcludes>**/*.js,**/*.css,**/*.jsp</warSourceExcludes>
+					<warSourceExcludes>**/*.js,**/*.css,**/*.jsp,**/*.html,**/*.htm</warSourceExcludes>
 					<webResources>
 						<resource>
 							<directory>${project.build.directory}/prepare</directory>
