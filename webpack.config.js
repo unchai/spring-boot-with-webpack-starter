@@ -15,10 +15,9 @@ ManifestReplacePlugin.prototype.apply = function (compiler) {
   var pluginOptions = this.pluginOptions;
 
   compiler.plugin('done', function () {
-    var basedir = pluginOptions.basedir;
     var manifest = require(path.join(this.options.output.path, pluginOptions.manifestFilename));
 
-    glob(basedir + '/' + pluginOptions.src, (err, files) => {
+    glob(path.join(pluginOptions.basedir, pluginOptions.src), (err, files) => {
       files.forEach((file) => {
         fs.readFile(file, 'utf8', function (err, data) {
           if (err) return console.log(err);
