@@ -3,7 +3,8 @@ const webpack = require('webpack');
 const srcdir = path.resolve(__dirname, 'src/main/webapp');
 
 const entries = {
-  'index': srcdir + '/static/entries/index.js'
+  'index': srcdir + '/static/entries/index.js',
+  'demo': srcdir + '/static/entries/demo.js'
 };
 
 module.exports = {

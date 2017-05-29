@@ -9,5 +9,6 @@
 	<input type="text" id="text">
 </div>
 <script type="text/javascript" src="/static/bundle/index.js"></script>
+<script type="text/javascript" src="/static/bundle/demo.js"></script>
 </body>
 </html>
