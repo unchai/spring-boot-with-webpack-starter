@@ -1,48 +1,66 @@
 const path = require('path');
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
-const ManifestPlugin = require('webpack-manifest-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ManifestReplacePlugin = require('webpack-manifest-replace-plugin');
-const commonConfig = require('./webpack.config.common');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-module.exports = webpackMerge(commonConfig, {
+const developmentConfig = require('./webpack.config.local');
+const productionConfig = require('./webpack.config.prod');
+
+const srcdir = path.resolve(__dirname, 'src/main/frontend');
+
+const entries = {
+  'index': path.join(srcdir, 'entry/index.js'),
+  'demo': path.join(srcdir, 'entry/demo.js'),
+};
+
+const commonConfig = {
+  entry: entries,
   output: {
-    filename: '[name]-[chunkhash].js',
-    path: path.resolve(__dirname, 'target/prepare/static/bundle'),
+    publicPath: '/static/bundle/',
+  },
+  module: {
+    rules: [
+      {
+        test: require.resolve('jquery'),
+        use: 'expose-loader?jQuery',
+      },
+      {
+        test: /\.css$/,
+        loader: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {presets: [['env', {modules: false}]]},
+        },
+      },
+    ],
+  },
+  optimization: {
+    namedModules: true,
+    noEmitOnErrors: true,
+    occurrenceOrder: true,
+    splitChunks: {
+      cacheGroups: {
+        default: false,
+        vendors: false,
+        common: {
+          chunks: 'initial',
+          name: 'common',
+          test: chunks => chunks.resource && !/^.*\.(css|scss)$/.test(chunks.resource) && /node_modules/.test(chunks.context),
+        },
+      },
+    },
   },
   plugins: [
-    new webpack.LoaderOptionsPlugin({
-      minimize: true,
-      debug: false
+    new webpack.ProvidePlugin({
+      jQuery: 'jquery',
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      beautify: false,
-      mangle: {
-        screw_ie8: true,
-        keep_fnames: true
-      },
-      compress: {
-        warnings: false,
-        screw_ie8: true
-      },
-      comments: false
-    }),
-    new CopyWebpackPlugin([
-      {
-        context: path.resolve(__dirname, 'src/main/webapp/'),
-        from: '**/*.+(jsp|html|htm)',
-        to: path.resolve(__dirname, 'target/prepare')
-      }
-    ]),
-    new ManifestPlugin({
-      fileName: 'rev-manifest.json',
-      basePath: '/static/bundle/'
-    }),
-    new ManifestReplacePlugin({
-      basedir: path.resolve(__dirname, 'target/prepare'),
-      src: '**/*.+(jsp|html|htm)',
-      manifestFilename: 'rev-manifest.json'
-    })
-  ]
-});
+  ],
+};
+
+module.exports = (env) => env === 'development'
+  ? webpackMerge(commonConfig, developmentConfig)
+  : webpackMerge(commonConfig, productionConfig);
