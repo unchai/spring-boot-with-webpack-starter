@@ -2,7 +2,7 @@
 
 ### Requirements
 
-* Java 1.7+
+* Java 1.8+
 * Apache maven 3.1+
 * Node.js
 
