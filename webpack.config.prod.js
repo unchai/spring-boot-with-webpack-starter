@@ -29,7 +29,8 @@ module.exports = {
           },
           warnings: false,
         },
-      }), new OptimizeCssnanoPlugin({
+      }),
+      new OptimizeCssnanoPlugin({
         sourceMap: false,
         cssnanoOptions: {
           preset: [
@@ -41,10 +42,11 @@ module.exports = {
             },
           ],
         },
-      })],
+      }),
+    ],
   },
   plugins: [
-    new MiniCssExtractPlugin({filename: '[contenthash].css'}),
+    new MiniCssExtractPlugin({ filename: '[contenthash].css' }),
     new ManifestReplacePlugin({
       include: path.resolve(__dirname, 'src/main/resources/templates'),
       test: /\.(jsp|html|htm)$/,

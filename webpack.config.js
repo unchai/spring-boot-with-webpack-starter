@@ -48,7 +48,9 @@ const commonConfig = {
         common: {
           chunks: 'initial',
           name: 'common',
-          test: chunks => chunks.resource && !/^.*\.(css|scss)$/.test(chunks.resource) && /node_modules/.test(chunks.context),
+          test: chunks => chunks.resource
+            && !/^.*\.(css|scss)$/.test(chunks.resource)
+            && /node_modules/.test(chunks.context),
         },
       },
     },

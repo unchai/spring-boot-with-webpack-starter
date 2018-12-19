@@ -1,0 +1,26 @@
+{
+  "root": true,
+  "extends": [
+    "eslint-config-google",
+    "prettier"
+  ],
+  "plugins": [
+    "babel",
+    "prettier"
+  ],
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2017,
+    "sourceType": "module"
+  },
+  "rules": {
+    "prettier/prettier": "error",
+    "valid-jsdoc": "off",
+    "require-jsdoc": "off",
+    "no-console": "off",
+    "no-invalid-this": "off"
+  }
+}

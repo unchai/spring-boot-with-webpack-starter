@@ -9,6 +9,6 @@ module.exports = {
     path: path.resolve(__dirname, 'target/deploy/static/bundle'),
   },
   plugins: [
-    new MiniCssExtractPlugin({filename: '[name].css'}),
+    new MiniCssExtractPlugin({ filename: '[name].css' }),
   ],
 };
