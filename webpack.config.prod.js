@@ -1,7 +1,7 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ManifestReplacePlugin = require('webpack-manifest-replace-plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const OptimizeCssnanoPlugin = require('@intervolga/optimize-cssnano-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
@@ -29,9 +29,17 @@ module.exports = {
           },
           warnings: false,
         },
-      }), new OptimizeCssAssetsPlugin({
-        cssProcessorOptions: {
-          safe: true,
+      }), new OptimizeCssnanoPlugin({
+        sourceMap: false,
+        cssnanoOptions: {
+          preset: [
+            'default',
+            {
+              discardComments: {
+                removeAll: true,
+              },
+            },
+          ],
         },
       })],
   },
