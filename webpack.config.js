@@ -1,67 +1,47 @@
+/**
+ * For LOCAL development mode webpack config
+ **/
+const os = require('os');
 const path = require('path');
-const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HappyPack = require('happypack');
+const commonConfig = require('./webpack.config.common');
 
-const developmentConfig = require('./webpack.config.local');
-const productionConfig = require('./webpack.config.prod');
+// eslint-disable-next-line new-cap
+const happyPackThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
-const srcdir = path.resolve(__dirname, 'src/main/frontend');
-
-const entries = {
-  'index': path.join(srcdir, 'entry/index.js'),
-  'demo': path.join(srcdir, 'entry/demo.js'),
-};
-
-const commonConfig = {
-  entry: entries,
+module.exports = webpackMerge(commonConfig, {
+  mode: 'development',
+  devtool: 'cheap-module-eval-source-map',
   output: {
-    publicPath: '/static/bundle/',
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'target/deploy/static/bundle'),
   },
   module: {
     rules: [
       {
-        test: require.resolve('jquery'),
-        use: 'expose-loader?jQuery',
-      },
-      {
         test: /\.css$/,
-        loader: [MiniCssExtractPlugin.loader, 'css-loader'],
+        use: [MiniCssExtractPlugin.loader, 'happypack/loader?id=css'],
       },
       {
         test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-        },
+        exclude: /node_modules|src\/main\/frontend\/vendor/,
+        use: 'happypack/loader?id=js',
       },
     ],
   },
-  optimization: {
-    namedModules: true,
-    noEmitOnErrors: true,
-    occurrenceOrder: true,
-    splitChunks: {
-      cacheGroups: {
-        default: false,
-        vendors: false,
-        common: {
-          chunks: 'initial',
-          name: 'common',
-          test: chunks => chunks.resource
-            && !/^.*\.(css|scss)$/.test(chunks.resource)
-            && /node_modules/.test(chunks.context),
-        },
-      },
-    },
-  },
   plugins: [
-    new webpack.ProvidePlugin({
-      jQuery: 'jquery',
+    new MiniCssExtractPlugin({ filename: '[name].css' }),
+    new HappyPack({
+      id: 'js',
+      threadPool: happyPackThreadPool,
+      loaders: ['babel-loader'],
+    }),
+    new HappyPack({
+      id: 'css',
+      threadPool: happyPackThreadPool,
+      loaders: ['css-loader'],
     }),
   ],
-};
-
-module.exports = (env) => env === 'development'
-  ? webpackMerge(commonConfig, developmentConfig)
-  : webpackMerge(commonConfig, productionConfig);
+});

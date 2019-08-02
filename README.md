@@ -11,13 +11,26 @@
 
 ```sh
 $ npm install
-$ ./mvnw clean spring-boot:run -Drun.jvmArguments="-Dspring.profiles.active=local" &
-$ npm run watch
+$ ./mvnw clean spring-boot:run -Dspring-boot.run.profiles=local &
+$ npm start
+```
+
+#### For development mode
+
+```sh
+$ ./mvnw -Pdev clean package
+$ java -jar ./target/spring-boot-with-frontend-stater-0.0.1-SNAPSHOT.war
 ```
 
 #### For production mode
 
 ```sh
-$ ./mvnw clean package
+$ ./mvnw -Preal clean package
 $ java -jar ./target/spring-boot-with-frontend-stater-0.0.1-SNAPSHOT.war
+```
+
+#### Show bundle analyze map
+
+```sh
+$ npm run analyze
 ```
