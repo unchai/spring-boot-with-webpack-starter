@@ -49,7 +49,7 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "rxjs": "^6.5.3"
   },
   "lint-staged": {
