@@ -13,7 +13,7 @@ import java.io.IOException;
 @Configuration
 @Profile("local")
 public class WebMvcConfig implements WebMvcConfigurer {
-	private Logger logger = LoggerFactory.getLogger(WebMvcConfig.class);
+	private final Logger logger = LoggerFactory.getLogger(WebMvcConfig.class);
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {

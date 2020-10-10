@@ -3,7 +3,7 @@
  **/
 const os = require('os');
 const path = require('path');
-const webpackMerge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HappyPack = require('happypack');
 const commonConfig = require('./webpack.config.common');
@@ -11,9 +11,9 @@ const commonConfig = require('./webpack.config.common');
 // eslint-disable-next-line new-cap
 const happyPackThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
-module.exports = webpackMerge(commonConfig, {
+module.exports = merge(commonConfig, {
   mode: 'development',
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval-source-map',
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'target/deploy/static/bundle'),

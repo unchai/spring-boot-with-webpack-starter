@@ -2,7 +2,7 @@
 
 ### Requirements
 
-* Java 1.8+
+* Java 11+
 * Apache maven 3.1+
 * Node.js
 
@@ -11,7 +11,7 @@
 
 ```sh
 $ npm install
-$ ./mvnw clean spring-boot:run -Dspring-boot.run.profiles=local &
+$ ./mvnw clean spring-boot:run -spring.profiles.active=local &
 $ npm start
 ```
 

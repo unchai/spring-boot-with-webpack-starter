@@ -2,7 +2,7 @@
  * For REAL production mode webpack config
  **/
 const path = require('path');
-const webpackMerge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssnanoPlugin = require('@intervolga/optimize-cssnano-plugin');
 const ManifestReplacePlugin = require('webpack-manifest-replace-plugin');
@@ -11,7 +11,7 @@ const commonConfig = require('./webpack.config.common');
 
 module.exports = (env = { debug: false, analyze: false }) => {
   const { debug, analyze } = env;
-  const webpackConfig = webpackMerge(commonConfig, {
+  const webpackConfig = merge(commonConfig, {
     mode: 'production',
     devtool: debug ? 'cheap-module-source-map' : false,
     output: {
