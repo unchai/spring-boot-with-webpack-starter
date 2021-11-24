@@ -4,7 +4,7 @@
 const path = require('path');
 const { merge } = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCssnanoPlugin = require('@intervolga/optimize-cssnano-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const ManifestReplacePlugin = require('webpack-manifest-replace-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const commonConfig = require('./webpack.config.common');
@@ -16,16 +16,19 @@ module.exports = (env = { debug: false, analyze: false }) => {
     devtool: debug ? 'cheap-module-source-map' : false,
     output: {
       filename: '[name]-[chunkhash].js',
-      path: path.join(__dirname, 'target/prepare/static/bundle'),
+      path: path.join(__dirname, 'build/prepare/BOOT-INF/classes/static/bundle'),
     },
     module: {
       rules: [
         {
           test: /\.css$/,
-          use: [MiniCssExtractPlugin.loader, 'css-loader'],
+          use: [
+            MiniCssExtractPlugin.loader,
+            { loader: 'css-loader', options: { sourceMap: debug }}
+          ],
         },
         {
-          test: /\.js$/,
+          test: /\.(ts|tsx)$/,
           exclude: /node_modules|src\/main\/frontend\/vendor/,
           use: 'babel-loader',
         },
@@ -38,7 +41,6 @@ module.exports = (env = { debug: false, analyze: false }) => {
       minimizer: [
         new TerserPlugin({
           parallel: true,
-          sourceMap: debug,
           terserOptions: {
             compress: {
               drop_console: !debug,
@@ -53,9 +55,8 @@ module.exports = (env = { debug: false, analyze: false }) => {
             warnings: false,
           },
         }),
-        new OptimizeCssnanoPlugin({
-          sourceMap: debug,
-          cssnanoOptions: {
+        new CssMinimizerPlugin({
+          minimizerOptions: {
             preset: [
               'default',
               {
@@ -73,7 +74,7 @@ module.exports = (env = { debug: false, analyze: false }) => {
       new ManifestReplacePlugin({
         include: path.resolve(__dirname, 'src/main/resources/templates'),
         test: /\.(jsp|html|htm)$/,
-        outputDir: path.resolve(__dirname, 'target/prepare/WEB-INF/classes/templates'),
+        outputDir: path.resolve(__dirname, 'build/prepare/BOOT-INF/classes/templates'),
       }),
     ],
   });

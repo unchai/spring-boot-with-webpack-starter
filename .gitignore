@@ -1,9 +1,13 @@
-.yarnclean
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**
+!**/src/test/**
 
-etc/
-node/
 node_modules/
-target/
+.yarnclean
+.eslintcache
 
 .idea/
 *.iml

@@ -3,7 +3,6 @@
 ### Requirements
 
 * Java 11+
-* Apache maven 3.1+
 * Node.js
 
 ### Usage
@@ -11,22 +10,22 @@
 
 ```sh
 $ npm install
-$ ./mvnw clean spring-boot:run -spring.profiles.active=local &
+$ ./gradlew -Pprofile=local clean bootRun &
 $ npm start
 ```
 
 #### For development mode
 
 ```sh
-$ ./mvnw -Pdev clean package
-$ java -jar ./target/spring-boot-with-frontend-stater-0.0.1-SNAPSHOT.war
+$ ./gradlew -Pprofile=dev clean bootJar
+$ java -jar ./target/spring-boot-with-frontend-stater-1.0.0.war
 ```
 
 #### For production mode
 
 ```sh
-$ ./mvnw -Preal clean package
-$ java -jar ./target/spring-boot-with-frontend-stater-0.0.1-SNAPSHOT.war
+$ ./gradlew -Pprofile=real clean bootJar
+$ java -jar ./target/spring-boot-with-frontend-stater-1.0.0.war
 ```
 
 #### Show bundle analyze map

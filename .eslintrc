@@ -1,26 +1,26 @@
 {
   "root": true,
+  "parser": "@typescript-eslint/parser",
   "extends": [
-    "eslint-config-google",
-    "prettier"
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:prettier/recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime"
   ],
   "plugins": [
-    "babel",
-    "prettier"
+    "@typescript-eslint"
   ],
-  "env": {
-    "browser": true,
-    "es6": true
+  "rules": {
   },
   "parserOptions": {
     "ecmaVersion": 2017,
     "sourceType": "module"
   },
-  "rules": {
-    "prettier/prettier": "error",
-    "valid-jsdoc": "off",
-    "require-jsdoc": "off",
-    "no-console": "off",
-    "no-invalid-this": "off"
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }

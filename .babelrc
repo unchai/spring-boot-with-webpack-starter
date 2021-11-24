@@ -9,6 +9,8 @@
           "proposals": true
         }
       }
-    ]
+    ],
+    "@babel/typescript",
+    "@babel/react"
   ]
 }
