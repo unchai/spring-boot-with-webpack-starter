@@ -1,0 +1,79 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'com.github.node-gradle.node' version '3.1.1'
+    id 'com.github.unchai.checkstyle-github' version '0.0.3'
+    id 'java'
+    id 'idea'
+}
+
+group = 'com.github.unchai'
+version = '1.0.0'
+sourceCompatibility = '11'
+
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+def profile = project.findProperty('profile') ?: 'local'
+def additionalResourceTarget = profile == 'ci' ? 'dev' : profile
+
+sourceSets {
+    main {
+        resources {
+            srcDir "src/main/resources-${additionalResourceTarget}"
+        }
+    }
+}
+
+if (!(profile == 'local' || profile == 'ci')) {
+    task webpack(type: NpmTask, dependsOn: npmInstall) {
+        args = profile == 'dev' ? ['run', 'build:debug'] : ['run', 'build']
+    }
+
+    task copyWebAppDir(type: Copy, dependsOn: webpack) {
+        from fileTree("${rootDir}/src/main/webapp") {
+            into "${buildDir}/prepare/webapp"
+            exclude '**/WEB-INF/templates/**/*'
+        }
+    }
+
+    bootJar.dependsOn copyWebAppDir
+
+    bootJar {
+        from fileTree("${buildDir}/prepare") {
+            into ''
+            exclude 'webapp'
+            duplicatesStrategy DuplicatesStrategy.EXCLUDE
+        }
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+node {
+    version = '16.13.0'
+    npmVersion = '8.1.2'
+    download = true
+}

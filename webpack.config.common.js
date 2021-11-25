@@ -4,8 +4,8 @@ const webpack = require('webpack');
 const srcdir = path.resolve(__dirname, 'src/main/frontend');
 
 const entries = {
-  index: path.join(srcdir, 'entry/index.js'),
-  demo: path.join(srcdir, 'entry/demo.js'),
+  index: path.join(srcdir, 'entry/index.tsx'),
+  demo: path.join(srcdir, 'entry/demo.tsx'),
 };
 
 module.exports = {
@@ -13,21 +13,9 @@ module.exports = {
   output: {
     publicPath: '/static/bundle/',
   },
-  module: {
-    rules: [
-      {
-        test: require.resolve('jquery'),
-        loader: 'expose-loader',
-        options: {
-          exposes: ['$', 'jQuery'],
-        },
-      },
-    ],
-  },
   resolve: {
-    extensions: ['.js'],
+    extensions: ['.ts', '.tsx', '.js', '.css'],
     modules: [srcdir, 'node_modules'],
-    mainFields: ['browser', 'main', 'module'],
   },
   optimization: {
     splitChunks: {
@@ -48,9 +36,4 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    new webpack.ProvidePlugin({
-      jQuery: 'jquery',
-    }),
-  ],
 };

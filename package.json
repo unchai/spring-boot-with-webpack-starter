@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "spring-boot-with-frontend-starter",
   "scripts": {
-    "clean": "rimraf ./node_modules/.cache ./cache-loader ./target/prepare ./target/deploy/static/bundle",
+    "clean": "rimraf ./node_modules/.cache ./cache-loader ./build/prepare ./build/resources/main/static/bundle",
     "prestart": "npm run clean",
     "prebuild": "npm run clean",
     "prebuild:debug": "npm run clean",
@@ -11,50 +11,51 @@
     "start": "webpack --config webpack.config.js --progress --watch",
     "build": "webpack --config webpack.config.prod.js",
     "build:debug": "webpack --config webpack.config.prod.js --env.debug",
-    "analyze": "webpack --config webpack.config.prod.js --env.analyze --progress",
-    "lint": "eslint 'src/main/frontend/**/*.js'",
-    "precommit": "lint-staged"
+    "analyze": "webpack --config webpack.config.prod.js --env analyze=progress",
+    "lint": "eslint --cache --ext .ts,.tsx src/main/frontend/",
+    "prepare": "husky install"
   },
   "private": true,
   "author": "Jaehyeon Nam @unchai",
   "repository": "git@github.com:unchai/spring-boot-with-frontend-starter.git",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.11.6",
-    "@babel/preset-env": "^7.11.5",
-    "@intervolga/optimize-cssnano-plugin": "^1.0.6",
-    "babel-loader": "^8.1.0",
-    "core-js": "^3.6.5",
-    "css-loader": "^3.6.0",
-    "eslint": "^7.11.0",
-    "eslint-config-google": "^0.14.0",
-    "eslint-config-prettier": "^6.12.0",
-    "eslint-plugin-babel": "^5.3.1",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-prettier": "^3.1.4",
-    "expose-loader": "^1.0.1",
-    "happypack": "^5.0.1",
-    "husky": "^4.3.0",
-    "lint-staged": "^10.4.0",
-    "mini-css-extract-plugin": "^1.0.0",
-    "prettier": "^2.1.2",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-react": "^7.16.0",
+    "@babel/preset-typescript": "^7.16.0",
+    "@types/jquery": "^3.5.9",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "babel-loader": "^8.2.3",
+    "core-js": "^3.19.1",
+    "css-loader": "^6.5.1",
+    "css-minimizer-webpack-plugin": "^3.1.4",
+    "eslint": "^8.3.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.27.1",
+    "husky": "^7.0.0",
+    "lint-staged": "^12.1.2",
+    "mini-css-extract-plugin": "^2.4.5",
+    "prettier": "^2.4.1",
     "raw-loader": "^4.0.2",
     "rimraf": "^3.0.2",
-    "terser-webpack-plugin": "^4.2.3",
-    "webpack": "^4.44.2",
-    "webpack-bundle-analyzer": "^3.9.0",
-    "webpack-cli": "^3.3.12",
-    "webpack-manifest-replace-plugin": "^1.0.0",
-    "webpack-merge": "^5.2.0"
+    "terser-webpack-plugin": "^5.2.5",
+    "typescript": "^4.5.2",
+    "webpack": "^5.64.2",
+    "webpack-bundle-analyzer": "^4.5.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-manifest-replace-plugin": "^2.0.0",
+    "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "jquery": "^3.5.1",
-    "rxjs": "^6.6.3"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "lint-staged": {
-    "*.js": [
-      "eslint",
-      "git add"
+    "src/main/frontend/**/*.{ts,tsx}": [
+      "eslint --cache --fix"
     ]
   }
 }
